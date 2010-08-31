@@ -1,0 +1,50 @@
+/******************************************************
+// Copyright 2008 Derrick Pallas. All rights reserved.
+//
+// This file is part of c-ptr.
+//
+// c-ptr is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// c-ptr is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with c-ptr.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef C_PTR_H
+#define C_PTR_H
+
+#include <cstddef>
+#include <boost/noncopyable.hpp>
+
+namespace ptr
+{
+  template< typename T >
+    inline void free( T * ptr ) { ::free(ptr); };
+  
+  template< typename T, void(*F)(T*) = free<T> >
+  class c : private boost::noncopyable
+  {
+  private:
+    T * ptr;
+    
+  public:
+    explicit c( T * that = NULL ) : ptr(that) { }
+   ~c( ) { if (ptr) F(ptr); }
+
+    T * operator = ( T * that ) { return ptr=that; }
+
+    operator bool() const { return bool(ptr); }
+
+    T & operator * ( ) const { return *ptr; }
+    T * operator -> ( ) const { return ptr; }
+  };
+}
+
+#endif // C_PTR_H
