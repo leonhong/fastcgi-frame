@@ -19,13 +19,33 @@
 
 #include "fastcgi-app.h"
 
+#include <ctemplate/template.h>
+
+void tpl(std::ostream &out) {
+	ctemplate::TemplateDictionary dict("example");
+	dict.SetValue("NAMEi", "John Smith");
+	int winnings = random() % 100000;
+	dict.SetIntValue("VALUE", winnings);
+	dict.SetFormattedValue("TAXED_VALUE","%.2f",winnings * 0.83);
+	if (1) {
+		dict.ShowSection("N_CA");
+	}
+	ctemplate::Template* tpl = ctemplate::Template::GetTemplate("example.tpl", ctemplate::DO_NOT_STRIP);
+	std::string output;
+ 	tpl->Expand(&output, &dict);
+	out << output;
+}
+
 class HelloWorld : public fastcgi::app {
 public:
 	fastcgi::app::status accept(std::istream & in, std::ostream & out, std::ostream & err, char ** envp) {
  		out << "Status: 200\r\n"
  				"Content-Type: text/plain\r\n"
 				"\r\n";
-		out << "Hello World Wide Web!" << std::endl;
+		/*out << "1Hello World Wide Web~!" << std::endl;
+		out << "Hello World Wide Web~!" << std::endl;*/
+		//std::cout << "Content-type: text/html\r\n" "r\n";
+		tpl(out);
 		return 0;
 	}
 };
