@@ -21,6 +21,8 @@
 
 #include <ctemplate/template.h>
 
+#include "fcgio.h"
+
 void tpl(std::ostream &out) {
 	ctemplate::TemplateDictionary dict("example");
 	dict.SetValue("NAMEi", "John Smith");
@@ -38,7 +40,7 @@ void tpl(std::ostream &out) {
 
 class HelloWorld : public fastcgi::app {
 public:
-	fastcgi::app::status accept(std::istream & in, std::ostream & out, std::ostream & err, char ** envp) {
+	fastcgi::app::status accept(std::istream &in, std::ostream &out, std::ostream &err, char **envp) {
  		out << "Status: 200\r\n"
  				"Content-Type: text/plain\r\n"
 				"\r\n";
@@ -46,6 +48,13 @@ public:
 		out << "Hello World Wide Web~!" << std::endl;*/
 		//std::cout << "Content-type: text/html\r\n" "r\n";
 		tpl(out);
+		
+		char *query_string;
+		query_string = FCGX_GetParam("QUERY_STRING", envp);
+		if (query_string)
+			out << query_string << std::endl;
+		else
+			out << "query_string is null" << std::endl;
 		return 0;
 	}
 };
