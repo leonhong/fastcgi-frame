@@ -38,7 +38,7 @@ int main( int argc, char * argv[] ) {
 				boost::bind(&fastcgi::engine::run, boost::shared_ptr<fastcgi::engine>(new fastcgi::engine()), fastcgi::instantiate()));
 			threads.join_all();
 		} else {
-			return 0;//fastcgi::instantiate()->accept(std::cin, std::cout, std::cerr, environ);
+			return fastcgi::instantiate()->accept(std::cin, std::cout, std::cerr, environ);
 		}
 	} catch(const std::exception & e) {
 		std::cerr << "exception: " << e.what() << std::endl;
