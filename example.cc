@@ -23,9 +23,9 @@
 
 #include "fcgio.h"
 
-void tpl(std::ostream &out) {
+static void tpl(std::ostream &out) {
 	ctemplate::TemplateDictionary dict("example");
-	dict.SetValue("NAMEi", "John Smith");
+	dict.SetValue("NAME", "John Smith");
 	int winnings = random() % 100000;
 	dict.SetIntValue("VALUE", winnings);
 	dict.SetFormattedValue("TAXED_VALUE","%.2f",winnings * 0.83);
@@ -38,6 +38,14 @@ void tpl(std::ostream &out) {
 	out << output;
 }
 
+static void penv(std::ostream &out, char **envp) {
+	out << "<PRE>\n";
+	for ( ; *envp; ++envp) {
+		out << *envp << "\n";
+	}
+	out << "</PRE>\n";
+}
+
 class HelloWorld : public fastcgi::app {
 public:
 	fastcgi::app::status accept(std::istream &in, std::ostream &out, std::ostream &err, char **envp) {
@@ -48,7 +56,7 @@ public:
 		out << "Hello World Wide Web~!" << std::endl;*/
 		//std::cout << "Content-type: text/html\r\n" "r\n";
 		tpl(out);
-		
+		penv(out, envp);	
 		char *query_string;
 		query_string = FCGX_GetParam("QUERY_STRING", envp);
 		if (query_string)
