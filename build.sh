@@ -1,5 +1,5 @@
 # !/bin/sh
-#cgi-fcgi -start -connect /tmp/hello.sock ./app 
+#cgi-fcgi -start -connect /tmp/hello.sock ./app.cgi
 
 #nignx
 #server {
